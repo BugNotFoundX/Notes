@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "33a46b5d8adcbf22",
+        "id": "88b427b1eaed3a3a",
         "type": "tabs",
         "children": [
           {
-            "id": "1c936f1f750162ba",
+            "id": "b75057eb8bf28717",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -80,35 +80,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "251564fe9a7e384b",
-            "type": "leaf",
-            "state": {
-              "type": "backlink",
-              "state": {
-                "file": "知识/抽象代数.md",
-                "collapseAll": false,
-                "extraContext": false,
-                "sortOrder": "alphabetical",
-                "showSearch": false,
-                "searchQuery": "",
-                "backlinkCollapsed": false,
-                "unlinkedCollapsed": true
-              }
-            }
-          },
-          {
-            "id": "2e5524c550c86895",
-            "type": "leaf",
-            "state": {
-              "type": "outgoing-link",
-              "state": {
-                "file": "知识/抽象代数.md",
-                "linksCollapsed": false,
-                "unlinkedCollapsed": true
-              }
-            }
-          },
-          {
             "id": "7ba0410f3b5229b4",
             "type": "leaf",
             "state": {
@@ -120,7 +91,7 @@
             }
           },
           {
-            "id": "662c17701f4b1ec6",
+            "id": "cffb05da13889f09",
             "type": "leaf",
             "state": {
               "type": "outline",
@@ -130,7 +101,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -147,10 +118,12 @@
       "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "1c936f1f750162ba",
+  "active": "b75057eb8bf28717",
   "lastOpenFiles": [
-    "README.md",
+    "Excalidraw/Drawing 2024-07-01 21.39.50.excalidraw.md",
     "知识/抽象代数.md",
+    "Excalidraw",
+    "README.md",
     "未命名.md",
     "知识/未命名.canvas",
     "知识"
