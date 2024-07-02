@@ -99,9 +99,46 @@
                 "file": "知识/抽象代数.md"
               }
             }
+          },
+          {
+            "id": "c17f3bbec617625c",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "知识/抽象代数.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "d29858d17b4d6670",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "知识/抽象代数.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "3f2f88896c46265e",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -115,13 +152,14 @@
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "obsidian-excalidraw-plugin:新建绘图文件": false
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "b75057eb8bf28717",
+  "active": "3f2f88896c46265e",
   "lastOpenFiles": [
-    "Excalidraw/Drawing 2024-07-01 21.39.50.excalidraw.md",
     "知识/抽象代数.md",
+    "Excalidraw/Drawing 2024-07-01 21.39.50.excalidraw.md",
     "Excalidraw",
     "README.md",
     "未命名.md",
