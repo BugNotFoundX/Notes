@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识/抽象代数.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               }
@@ -80,23 +80,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "7ba0410f3b5229b4",
-            "type": "leaf",
-            "state": {
-              "type": "tag",
-              "state": {
-                "sortOrder": "frequency",
-                "useHierarchy": true
-              }
-            }
-          },
-          {
             "id": "cffb05da13889f09",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "知识/抽象代数.md"
+                "file": "README.md"
               }
             }
           },
@@ -106,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "知识/抽象代数.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -123,7 +112,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "知识/抽象代数.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -136,9 +125,19 @@
               "type": "advanced-tables-toolbar",
               "state": {}
             }
+          },
+          {
+            "id": "7ba0410f3b5229b4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -156,12 +155,16 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "cffb05da13889f09",
+  "active": "b75057eb8bf28717",
   "lastOpenFiles": [
-    "知识/抽象代数.md",
-    "Excalidraw/Drawing 2024-07-01 21.39.50.excalidraw.md",
+    "知识/处理器设计/OpenLA500.md",
+    "Excalidraw/Drawing 2024-07-17 11.00.04.excalidraw.md",
     "Excalidraw",
     "README.md",
+    "知识/处理器设计",
+    "知识/抽象代数.md",
+    "知识/未命名.md",
+    "Excalidraw/Drawing 2024-07-01 21.39.50.excalidraw.md",
     "未命名.md",
     "知识/未命名.canvas",
     "知识"
