@@ -24,14 +24,34 @@
   ```
 
 - 结构体定义
-	```systemverilog
-	```
-```
+
+  ```systemverilog
+  
+  ```
+  
+- 一些通用的命名含义
+
+  | 名称 | 全称            | 含义               |
+  | ---- | --------------- | ------------------ |
+  | pc   | program counter | 程序计数器         |
+  | npc  | next pc         | 下一周期的pc       |
+  | ppc  | predicted pc    | pc的预测结果       |
+  | _q   | /               | 触发器输出端的标识 |
+  |      |                 |                    |
+  |      |                 |                    |
+
 #### 1.2.1 RAS实现
+
+- RAS相关知识见[教程文档]()
+- 一般的RAS的大小不超过16，**LainCore中RAS大小为8**
 
 - 定义存储结构`logic[7:0][31:0] ras_q;`
 
-- RAS在预测指令为CALL类型指令时被写入
+- 定义读写指针` logic[2:0] ras_w_ptr_q, ras_ptr_q;`
+
+- 定义分支预测逻辑中用到的RAS值的寄存器`logic[31:0] ppc_ras_q;`
+
+- RAS写入：在预测指令为CALL类型指令时被写入
 
   ```systemverilog
   // 如果pc是CALL类型指令且流水线不发生暂停
@@ -45,10 +65,15 @@
   end
   ```
 
-- RAS在预测指令为RETURN类型指令时被写入
+- RAS读出：在预测指令为RETURN类型指令时读出
 
   ```systemverilog
-  // 如果pc是RETURN类型指令且流水线不发生暂停
+  // 在第一个周期将栈顶元素读出到寄存器，优化时序
+  always_ff @(posedge clk) begin
+  	ppc_ras_q <= {ras_q[ras_ptr_q][31:2], 2'b00};
+  end
+  
+  // 第二周期，如果pc是RETURN类型指令且流水线不发生暂停
   if(pc_is_return && !f_stall_i) begin
   	// 更新读写指针
   	ras_w_ptr_q <= ras_w_ptr_q - 3'd1;
@@ -56,7 +81,7 @@
   end
   ```
   
-- RAS在分支预测失败时更新
+- RAS更新：在分支预测失败时更新
 
   ```systemverilog
   // RETURN MISS: 更新读写指针
@@ -73,7 +98,7 @@
   end
   ```
 
-  
+  1.2.2
 
 ```systemverilog
 module core_npc (
