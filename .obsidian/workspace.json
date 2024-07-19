@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md"
+                "file": "Work/CPU资料整理/技术文档/CPU设计.md"
               }
             }
           },
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -112,7 +112,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
+                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -155,8 +155,10 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "8c0dc2361a27e2da",
+  "active": "b75057eb8bf28717",
   "lastOpenFiles": [
+    "README.md",
+    "Work/CPU资料整理/技术文档/CPU设计.md",
     "Work/CPU资料整理/技术文档",
     "Work/CPU资料整理/教程/未命名",
     "Work/CPU资料整理/教程文档",
@@ -167,7 +169,6 @@
     "知识/处理器设计/OpenLA500.md",
     "Excalidraw/Drawing 2024-07-17 11.00.04.excalidraw.md",
     "Excalidraw",
-    "README.md",
     "知识/处理器设计",
     "Knowledge/抽象代数.md",
     "知识/未命名.md",
