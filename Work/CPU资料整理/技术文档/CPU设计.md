@@ -6,19 +6,19 @@
 - 项目地址https://github.com/LainChip/LainCore
 - 本章仅关注如何实现，相关知识参阅[教程文档]()
 
-##  分支预测
+## 1 分支预测
 
 - 代码位于LainCore/rtl/core_npc_complex.sv文件中
 - 本小节以LainCore分支预测器为例，介绍如何构建一个简单的二级分支预测器
 - 本节仅关注如何实现一个简单二级分支预测器，分支预测相关知识参阅[教程文档]()
 
-### 整体架构
+### 1.1 整体架构
 
 - 整体上实现了二级分支预测器，架构如图：（TODO）
 - 由于是顺序双发射架构，预测器每周期给出相邻8对齐两条PC的预测结果
 - TODO：更新信息生成
 
-### 具体实现
+### 1.2 具体实现
 
 - `pipeline.svh`中相关宏定义
 
@@ -90,11 +90,10 @@
   | pc   | program counter           | 程序计数器         |
   | npc  | next pc                   | 下一周期的pc       |
   | ppc  | predicted pc              | pc的预测结果       |
-  | _q   | /                         | 触发器输出端的标识 |
-  | lphr | local pattern history reg | 局部模式历史寄存器 |
-  |      |                           |                    |
 
-#### RAS实现
+
+
+#### 1.2.1 RAS实现
 
 - RAS（Return Address Stack）相关知识见[教程文档]()
 - 一般的RAS的大小不超过16，**LainCore中RAS大小为8**
@@ -153,7 +152,7 @@
   ```
 
 
-#### BTB实现
+#### 1.2.2 BTB实现
 
 - BTB（Branch Target Buffer）相关知识见[教程文档]()
 
@@ -268,7 +267,7 @@
   end
   ```
 
-#### PHT实现
+#### 1.2.3 PHT实现
 
 - PHT（Pattern History Table）相关知识见[教程文档]()
 
@@ -321,7 +320,7 @@
   end
   ```
 
-#### 分支预测
+#### 1.2.4 分支预测
 
 - 本阶段主要任务如下：
   - 跳转方向预测
@@ -460,4 +459,4 @@
   end
   ```
 
-##  指令译码
+## 2 指令译码

@@ -96,7 +96,7 @@
               "type": "backlink",
               "state": {
                 "file": "Work/CPU资料整理/技术文档/CPU设计.md",
-                "collapseAll": false,
+                "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
