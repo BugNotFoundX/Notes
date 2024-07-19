@@ -85,13 +85,13 @@
   
 - 本节一些通用的命名含义：
 
-  | 名称 | 全称                      | 含义               |
-  | ---- | ------------------------- | ------------------ |
-  | pc   | program counter           | 程序计数器         |
-  | npc  | next pc                   | 下一周期的pc       |
-  | ppc  | predicted pc              | pc的预测结果       |
-
-
+| 名称   | 全称                        | 含义        |
+| ---- | ------------------------- | --------- |
+| pc   | program counter           | 程序计数器     |
+| npc  | next pc                   | 下一周期的pc   |
+| ppc  | predicted pc              | pc的预测结果   |
+| _q   |                           | 触发器输出端的标识 |
+| lphr | local pattern history reg | 部模式历史寄存器  |
 
 #### 1.2.1 RAS实现
 
