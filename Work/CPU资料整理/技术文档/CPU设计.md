@@ -1,17 +1,24 @@
+# CPU设计
+
 
 - 本章基于 LainCore 代码介绍如何设计一个顺序双发射处理器
 - 本章内容按照处理器流水线从前到后顺序组织
 - 项目地址https://github.com/LainChip/LainCore
+- 本章仅关注如何实现，相关知识参阅[教程文档]()
 
-## 1 分支预测
+##  分支预测
 
 - 代码位于LainCore/rtl/core_npc_complex.sv文件中
-### 1.1 整体架构
+- 本小节以LainCore分支预测器为例，介绍如何构建一个简单的二级分支预测器
+- 本节仅关注如何实现一个简单二级分支预测器，分支预测相关知识参阅[教程文档]()
+
+### 整体架构
 
 - 整体上实现了二级分支预测器，架构如图：（TODO）
 - 由于是顺序双发射架构，预测器每周期给出相邻8对齐两条PC的预测结果
+- TODO：更新信息生成
 
-### 1.2 具体实现
+### 具体实现
 
 - `pipeline.svh`中相关宏定义
 
@@ -20,29 +27,76 @@
   `define _BPU_TARGET_NPC  (2'd0)    // 不跳转
   `define _BPU_TARGET_CALL (2'd1)    // 函数调用类型
   `define _BPU_TARGET_RETURN (2'd2)  // 调用返回类型
-  `define _BPU_TARGET_IMM (2'd3)     // 必然跳转
+  `define _BPU_TARGET_IMM (2'd3)     // 目标地址为pc + imm
   ```
 
-- 结构体定义
+- `pipeline.svh`中相关结构体定义
 
   ```systemverilog
+  typedef struct packed {
+    logic taken;  // 预测是否跳转
+    logic [                31:0] predict_pc ;  // 预测跳转地址
+    logic [                 1:0] lphr       ;  // 历史模式信息
+    logic [`_BHT_DATA_WIDTH-1:0] history    ;  // 分支历史
+    logic [                 1:0] target_type;  // 指令类型
+    logic                        dir_type   ;  // 是否条件跳转
+    logic [`_RAS_ADDR_WIDTH-1:0] ras_ptr;  // RAS栈指针
+  } bpu_predict_t;  // 分支预测信息
+  
+  typedef struct packed {
+    logic                        miss       ;  // 预测失败
+    logic [                31:0] pc         ;  // 预测失败的PC
+    logic                        true_taken ;  // 是否跳转
+    logic [                31:0] true_target;  // 跳转目标
+    logic [                 1:0] lphr       ;  // 预测信息携带的旧的lphr，更新时需要进一步计算
+    logic [`_BHT_DATA_WIDTH-1:0] history    ;  // 预测信息携带的旧的历史，更新时需要进一步计算
+  
+    logic need_update         ;  // BPU是否需要更新
+    logic true_conditional_jmp;  // 是否是条件跳转
+  
+    logic ras_miss_type;  // 是否需要更新RAS
+  
+    logic[1:0] true_target_type;  // 指令分支类型
+  
+    logic [`_RAS_ADDR_WIDTH-1:0] ras_ptr;  // 预测信息携带的旧的RAS栈指针
+  } bpu_correct_t;  // 正确的分支信息，也是BPU更新信息
+  
   
   ```
   
-- 一些通用的命名含义
+- 顶层接口定义：
 
-  | 名称 | 全称            | 含义               |
-  | ---- | --------------- | ------------------ |
-  | pc   | program counter | 程序计数器         |
-  | npc  | next pc         | 下一周期的pc       |
-  | ppc  | predicted pc    | pc的预测结果       |
-  | _q   | /               | 触发器输出端的标识 |
-  |      |                 |                    |
-  |      |                 |                    |
+  ```systemverilog
+  module core_npc (
+    input  logic              clk       ,
+    input  logic              rst_n     ,
+    input  logic              rst_jmp   ,  // 流水线冲刷信号
+    input  logic [31:0]       rst_target,  // 流水线冲刷时的目标地址
+    input  logic              f_stall_i ,  // 暂停信号
+    output logic [31:0]       pc_o      ,
+    output logic [31:0]       npc_o     ,
+    output logic [ 1:0]       valid_o   ,  // 2'b00 | 2'b01 | 2'b11 | 2'b10
+    output bpu_predict_t [1:0]predict_o ,
+    input  bpu_correct_t      correct_i
+  );
+  ```
+  
+  
+  
+- 本节一些通用的命名含义：
 
-#### 1.2.1 RAS实现
+  | 名称 | 全称                      | 含义               |
+  | ---- | ------------------------- | ------------------ |
+  | pc   | program counter           | 程序计数器         |
+  | npc  | next pc                   | 下一周期的pc       |
+  | ppc  | predicted pc              | pc的预测结果       |
+  | _q   | /                         | 触发器输出端的标识 |
+  | lphr | local pattern history reg | 局部模式历史寄存器 |
+  |      |                           |                    |
 
-- RAS相关知识见[教程文档]()
+#### RAS实现
+
+- RAS（Return Address Stack）相关知识见[教程文档]()
 - 一般的RAS的大小不超过16，**LainCore中RAS大小为8**
 
 - 定义存储结构`logic[7:0][31:0] ras_q;`
@@ -98,283 +152,299 @@
   end
   ```
 
-  1.2.2
 
-```systemverilog
-module core_npc (
-    input  logic              clk       ,
-    input  logic              rst_n     ,
-    input  logic              rst_jmp   ,
-    input  logic [31:0]       rst_target,
-    input  logic              f_stall_i ,
-    output logic [31:0]       pc_o      , // F1 STAGE
-    output logic [31:0]       npc_o     ,
-    output logic [ 1:0]       valid_o   , // 2'b00 | 2'b01 | 2'b11 | 2'b10
-    output bpu_predict_t [1:0]predict_o ,
-    input  bpu_correct_t      correct_i
-  );
-  // PC: pc 寄存器，f1 流水级
-  // NPC: 下一个 PC 值，f1 流水级前
-  // PPC_RAS_Q: RAS 方式预测的下一个跳转地址
-  // PPC_BTB: BTB 方式预测的下一个跳转地址
-  // PPC_PLUS8: 不预测跳转情况下，正常 +8
-  // JPC: 后端刷新管线的跳转地址
-  logic[31:0] pc, npc, ppc_ras_q, ppc_btb, ppc_plus8, jpc;
-  logic[7:0][31:0] ras_q;
-  assign npc_o = npc;
-  assign pc_o = pc;
-  logic[1:0] valid_q,nvalid;
-  always_ff @(posedge clk) begin
-    if(!rst_n) begin
-      pc <= 32'h1c000000;
-      valid_q <= 2'b11;
-    end
-    else begin
-      if(!f_stall_i || rst_jmp) begin
-        pc <= npc;
-        valid_q <= nvalid;
-      end
-    end
-  end
+#### BTB实现
 
-  logic[2:0] ras_w_ptr_q,ras_ptr_q;
-  always_ff @(posedge clk) begin
-    ppc_ras_q <= {ras_q[ras_ptr_q][31:2], 2'b00};
-  end
+- BTB（Branch Target Buffer）相关知识见[教程文档]()
 
-  logic inst_0_jmp;
-  logic[1:0][31:0] raw_ppc_btb;
-  assign ppc_btb = inst_0_jmp ? raw_ppc_btb[0] : raw_ppc_btb[1];
+- BTB被分为两个部分：地址部分（btb部分）和信息部分（info部分）
 
+- **注意：**历史遗留问题，代码命名中btb仅指代地址缓存，info指代指令信息缓存，**切勿将代码btb与教程中BTB含义混淆**
 
-  assign ppc_plus8 = {pc[31:3] + 1'd1, 3'b000};
+- btb部分包含1024个表项，分2个BANK，结构为2 * 512 entry
 
-  assign jpc = rst_target;
+- info部分包含512个表项，分2个BANK，结构为2 * 256 entry
 
-  logic pc_is_call, pc_is_return;
-  always_ff @(posedge clk) begin
-    if(!rst_n) begin
-      ras_ptr_q <= 0;
-      ras_w_ptr_q <= 1;
-    end
-    else begin
-      // RETURN MISS: RAS_PTR_Q <= (TRUE_PTR == R_PTR)
-      // CALL MISS RAS_PTR_Q <= TRUE_PTR AND ras_q[TRUE_PTR] <= TRUE_TARGET;
-      if(correct_i.miss || correct_i.ras_miss_type) begin
-        /* 考虑一下，没有 miss 但是类型估计错误的情况，这时候也需要更新 */
-        ras_w_ptr_q <= correct_i.ras_ptr + 3'd1;
-        ras_ptr_q <= correct_i.ras_ptr;
-        if(correct_i.true_target_type == `_BPU_TARGET_CALL) begin
-          ras_q[correct_i.ras_ptr] <= correct_i.pc + 3'd4;
-        end
-      end
-      else begin
-        if(pc_is_call && !f_stall_i) begin
-          ras_q[ras_w_ptr_q] <= {pc[31:3], 3'b000} + (inst_0_jmp ? 32'd4 : 32'd8);
-          ras_w_ptr_q <= ras_w_ptr_q + 3'd1;
-          ras_ptr_q <= ras_ptr_q + 3'd1;
-        end
-        if(pc_is_return && !f_stall_i) begin
-          ras_w_ptr_q <= ras_w_ptr_q - 3'd1;
-          ras_ptr_q <= ras_ptr_q - 3'd1;
-        end
-      end
-    end
-  end
+- 定义btb ram相关变量：
 
-  // BTB 以及 分支信息 ram
-  // 注意：BTB 使用 2 * 2k bram 存储，信息为 (32bits addr) * 512 entry * 2
-  // 也就是说，BTB 中仅存放间接跳转目标信息。
-
-  // 分支信息 ram 使用 lutram 存储
-  // 注意：lutram 大小受限，不可以存储过多表项
-  // 目前使用 2 * 256 entry 的配置，共 512 entry。
-  // 表格中存储 2bits 分支类型, 1bits 条件跳转, 5bits 历史信息, 6bits tag 信息。
-  // 也即是说，可以在 17位 == 128KB 的代码中区别开两个分支
-  typedef struct packed {
-    logic [1:0] target_type; // 0 npc, 1 call, 2 return, 3 imm
-    logic conditional_jmp;   // 0 / 1 condition
-    logic [4:0] history;
-    logic [5:0] tag;
-  } branch_info_t;
+  ```systemverilog
   logic[8:0] btb_waddr,btb_raddr;
   logic[1:0] btb_we;
   logic[31:0] btb_wdata;
   logic[1:0][31:0] btb_rdata;
-  assign raw_ppc_btb = btb_rdata;
-  assign btb_raddr = npc[11:3];
-  assign btb_waddr = correct_i.pc[11:3];
-  assign btb_wdata = correct_i.true_target;
-  always_comb begin
-    btb_we = '0;
-    btb_we[correct_i.pc[2]] = correct_i.need_update && 
-    (correct_i.true_target_type == `_BPU_TARGET_CALL ||correct_i.true_target_type == `_BPU_TARGET_IMM);
-  end
+  ```
 
+- 定义info ram相关变量：
+
+  ```systemverilog
+  typedef struct packed {
+    logic [1:0] target_type; // 0 npc, 1 call, 2 return, 3 imm
+    logic conditional_jmp;   // 0：非条件跳转；1：条件跳转
+    logic [4:0] history;     // 分支历史
+    logic [5:0] tag;         // pc对应的tag，确定pc身份
+  } branch_info_t;
+  
   logic[7:0] info_waddr,info_raddr;
   logic[1:0] info_we;
   branch_info_t winfo;
   branch_info_t [1:0]rinfo_q;
-  // 注意：这个 rinfo_q 实际上是对应 PC 持有的预测信息
-  // 也就是在这之后的有效域，转为 PC 了。
-  assign info_raddr = npc[10:3];
-  assign info_waddr = correct_i.pc[10:3];
-  always_comb begin
-    info_we = '0;
-    info_we[correct_i.pc[2]] = correct_i.need_update;
-  end
-  logic[7:0] rst_addr_q;
-  logic rst_n_q;
-  always_comb begin
-    winfo.target_type = rst_n_q ? correct_i.true_target_type : `_BPU_TARGET_NPC;
-    winfo.conditional_jmp = correct_i.true_conditional_jmp;
-    winfo.history = {correct_i.history[3:0], correct_i.true_taken};
-    winfo.tag = get_tag(correct_i.pc);
-  end
-  always_ff @(posedge clk) begin
-    if(rst_n) begin
-      rst_n_q <= '1;
-      rst_addr_q <= '0;
-    end else begin
-      rst_n_q <= '0;
-      rst_addr_q <= rst_addr_q + 1;
-    end
-  end
-    
+  ```
+
+- 存储结构定义：
+
+  ```systemverilog
   // 创建两个 btb 和 info mem，用于写更新时区别开来。
   for(genvar p = 0 ; p < 2 ; p++) begin  
     simpleDualPortRamRE #(
-                          .dataWidth(30 ),
-                          .ramSize  (512),
-                          .latency  (1  ),
-                          .readMuler(1  )
-                        ) btb_table (
-                          .clk     (clk       ),
-                          .rst_n   (rst_n     ),
-                          .addressA(btb_waddr ),
-                          .we      (btb_we[p] ),
-                          .addressB(btb_raddr ),
-                          .re      (!f_stall_i),
-                          .inData  (btb_wdata[31:2]),
-                          .outData (btb_rdata[p][31:2])
-                        );
+      .dataWidth(30 ),
+      .ramSize  (512),
+      .latency  (1  ),
+      .readMuler(1  )
+    ) btb_table (
+      .clk     (clk       ),
+      .rst_n   (rst_n     ),
+      .addressA(btb_waddr ),
+      .we      (btb_we[p] ),
+      .addressB(btb_raddr ),
+      .re      (!f_stall_i),
+      .inData  (btb_wdata[31:2]),
+      .outData (btb_rdata[p][31:2])
+    );
     assign btb_rdata[p][1:0] = '0;
     simpleDualPortLutRam #(
-                           .dataWidth($bits(branch_info_t)),
-                           .ramSize  (256),
-                           .latency  (1  ),
-                           .readMuler(1  )
-                         ) info_table (
-                           .clk     (clk       ),
-                           .rst_n   (rst_n     ),
-                           .addressA(info_waddr),
-                           .we      (info_we[p] | !rst_n_q),
-                           .addressB(info_raddr ^ rst_addr_q),
-                           .re      (!f_stall_i),
-                           .inData  (winfo),
-                           .outData (rinfo_q[p])
-                         );
+      .dataWidth($bits(branch_info_t)),
+      .ramSize  (256),
+      .latency  (1  ),
+      .readMuler(1  )
+    ) info_table (
+      .clk     (clk       ),
+      .rst_n   (rst_n     ),
+      .addressA(info_waddr),
+      .we      (info_we[p] | !rst_n_q),
+      .addressB(info_raddr ^ rst_addr_q),
+      .re      (!f_stall_i),
+      .inData  (winfo),
+      .outData (rinfo_q[p])
+    );
   end
+  ```
 
-  // 预测逻辑
-  // 根据 info 中指定的 history，寻址查找第二级 lutram，获得最终用于预测跳转信息的两位饱和计数器
+- btb读写逻辑：
+
+  ```systemverilog
+  assign btb_raddr = npc[11:3];              // 读地址来自NPC
+  assign btb_waddr = correct_i.pc[11:3];     // 写地址来自BPU更新请求
+  assign btb_wdata = correct_i.true_target;  // 将正确的跳转目标写入btb ram
+  always_comb begin
+    btb_we = '0;  // 默认不发生写入
+    // 仅更新PC对应的BANK
+    // 仅CALL和IMM类型指令需要缓存目标地址
+    // 因为：NPC类型不跳转，RETURN类型地址来自RAS
+    btb_we[correct_i.pc[2]] = correct_i.need_update && 
+                             (correct_i.true_target_type == `_BPU_TARGET_CALL ||
+                              correct_i.true_target_type == `_BPU_TARGET_IMM);
+  end
+  ```
+
+- info读写逻辑
+
+  ```systemverilog
+  assign info_raddr = npc[10:3];          // 读地址来自NPC
+  assign info_waddr = correct_i.pc[10:3]; // 写地址来自BPU更新请求
+  always_comb begin
+  	info_we = '0;  // 默认不发生写入
+    // 仅更新PC对应的BANK
+  	info_we[correct_i.pc[2]] = correct_i.need_update;
+  end
+  always_comb begin
+    // 复位时写入信息应采用NPC类型
+  	winfo.target_type = rst_n_q ? correct_i.true_target_type : `_BPU_TARGET_NPC;
+  	// 更新条件跳转信息
+    winfo.conditional_jmp = correct_i.true_conditional_jmp;
+  	// 滚动更新分支历史
+    winfo.history = {correct_i.history[3:0], correct_i.true_taken};
+  	// 更新PC对应的tag
+    winfo.tag = get_tag(correct_i.pc);
+  end
+  ```
+
+#### PHT实现
+
+- PHT（Pattern History Table）相关知识见[教程文档]()
+
+- 本文BPU架构中，PHT共32个表项
+
+- 定义PHT相关信号：
+
+  ```systemverilog
   logic level2_we;
   logic [4:0] level2_waddr;
   logic [1:0] level2_wdata;
   logic [1:0][4:0] level2_raddr;
-  logic [1:0][1:0] level2_cnt;
+  logic [1:0][1:0] level2_cnt;  // PHT的读出数据
+  ```
 
-  assign level2_wdata = gen_next_lphr(correct_i.lphr, correct_i.true_taken);
-  assign level2_waddr = correct_i.history;
-  assign level2_we = correct_i.true_conditional_jmp && correct_i.need_update;
+- 存储结构定义：
 
-  // taken 逻辑
-  logic [1:0] branch_need_jmp;
-  logic [1:0] tag_match;
+  ```systemverilog
   for(genvar p = 0 ; p < 2; p++) begin
     simpleDualPortLutRam #(
-                           .dataWidth(2 ),
-                           .ramSize  (32),
-                           .latency  (0 ),
-                           .readMuler(1 )
-                         ) l2_table (
-                           .clk     (clk            ),
-                           .rst_n   (rst_n          ),
-                           .addressA(level2_waddr   ),
-                           .we      (level2_we      ),
-                           .addressB(level2_raddr[p]),
-                           .re      (1'b1           ),
-                           .inData  (level2_wdata   ),
-                           .outData (level2_cnt[p]  )
-                         );
+      .dataWidth(2 ),
+      .ramSize  (32),
+      .latency  (0 ),  // 注意这里的延迟是0，
+      .readMuler(1 )
+    ) l2_table (
+      .clk     (clk            ),
+      .rst_n   (rst_n          ),
+      .addressA(level2_waddr   ),
+      .we      (level2_we      ),
+      .addressB(level2_raddr[p]),
+      .re      (1'b1           ),
+      .inData  (level2_wdata   ),
+      .outData (level2_cnt[p]  )
+    );
+  end
+  ```
+
+- 读写逻辑：
+
+  ```systemverilog
+  // 按照两位饱和计数器的规范计算要写入的pht表项信息
+  assign level2_wdata = gen_next_lphr(correct_i.lphr, correct_i.true_taken);
+  // 写入地址是更新信息中携带的分支历史
+  assign level2_waddr = correct_i.history;
+  // 是条件跳转的指令才会更新这个表
+  assign level2_we = correct_i.true_conditional_jmp && correct_i.need_update;
+  for(genvar p = 0 ; p < 2; p++) begin
+    // 使用分支历史来寻址pht
     assign level2_raddr[p] = rinfo_q[p].history;
-    // 可以被综合成一个 lut6
+  end
+  ```
+
+#### 分支预测
+
+- 本阶段主要任务如下：
+  - 跳转方向预测
+  - 有效性标记（标记输出的PC的有效性）
+  - 跳转目标预测
+  - 生成分支预测信息
+
+- 跳转方向预测：
+
+  ```systemverilog
+  // 定义相关信号
+  logic [1:0] branch_need_jmp;  // 是否需要跳转
+  logic [1:0] tag_match;  // PC与读出的TAG是否匹配
+  
+  // 预测逻辑，valid_q参看指令有效性标记
+  for(genvar p = 0 ; p < 2; p++) begin
     always_comb begin
-      branch_need_jmp[p] = '0; // 注意这个信号有 3 级逻辑
+      branch_need_jmp[p] = '0; // 默认不跳转
+      // 判断info表项是否被PC命中
+      assign tag_match[p] = rinfo_q[p].tag == get_tag(pc);
+      // 如果PC命中info表项且是分支指令
       if(rinfo_q[p].target_type != `_BPU_TARGET_NPC && tag_match[p]) begin
+        // 以下条件判断PC是否对应无条件跳转指令
         if(rinfo_q[p].target_type != `_BPU_TARGET_IMM || !rinfo_q[p].conditional_jmp) begin
-          // 这些情况下，是无条件跳转的
           branch_need_jmp[p] = /*'1*/valid_q[p];
         end
         else begin
-          // 这个情况下，依据
+          // PC被判定为条件跳转指令
+          // 根据PHT的结果判断是否跳转
           branch_need_jmp[p] = level2_cnt[p][1] && valid_q[p];
         end
       end
     end
-    assign tag_match[p] = rinfo_q[p].tag == get_tag(pc);
   end
+  ```
 
+- 指令有效性标记
+
+  - 在完成指令跳转情况判断后就可以对npc的有效性进行标记
+  - 分两个周期进行
+    - 第一周期：根据npc判断第一条指令是否有效
+    - 第二周期：根据预测跳转信息判断第二条指令是否有效
+
+  ```systemverilog
+  // 定义相关信号
+  // output logic [1:0] valid_o; 标记BPU输出PC的有效性
+  logic[1:0] valid_q;  // nvalid缓存一拍，与npc流动一致
+  logic[1:0] nvalid;   // 表示由npc值决定的有效性
+  
   // nvalid 逻辑
   always_comb begin
+    // 默认两条指令都有效
     nvalid = 2'b11;
+    // 当npc的其实位置是相邻至指令的第二条指令
+    // 将第一条指令无效化
     if(npc[2]) begin
       nvalid[0] = '0;
     end
   end
-
+  
   // valid_o 逻辑
   always_comb begin
     valid_o = valid_q & {!f_stall_i, !f_stall_i};
+    // 若第一条指令预测跳转，将第二条指令无效化
     if(inst_0_jmp) begin
       valid_o[1] = '0;
     end
   end
+  
+  // 更新valid_q
+  always_ff @(posedge clk) begin
+    if(!rst_n) begin
+      valid_q <= 2'b11;
+    end
+    else begin
+      // 当流水线不暂停或冲刷流水线时写入
+      if(!f_stall_i || rst_jmp) begin
+        valid_q <= nvalid;
+      end
+    end
+  end
+  ```
 
-  // 合成两路结果
-  // 对于条件跳转指令，预测是否会 taken
+- 跳转目标预测
+
+  - 目标地址共有4个来源
+    - PPC_RAS_Q: RAS 方式预测的下一个跳转地址
+    - PPC_BTB: BTB 方式预测的下一个跳转地址
+    - PPC_PLUS8: 不预测跳转情况下，正常 +8
+    - JPC: 后端刷新管线的跳转地址
+
+  ```systemverilog
   always_comb begin
+    // npc 默认为 align(pc, 8) + 8
     npc = ppc_plus8;
-    // npc_target_type = '0;
-    // npc_predict_taken = 1'b0;
-    predict_o[0].taken = '0;
-    predict_o[1].taken = '0;
-    pc_is_call = '0;
-    pc_is_return = '0;
     if(branch_need_jmp[0]) begin
-      // npc_target_type = rinfo_q[0].target_type;
-      // npc_predict_taken = 1'b1;
-      pc_is_call = rinfo_q[0].target_type == `_BPU_TARGET_CALL;
-      pc_is_return = rinfo_q[0].target_type == `_BPU_TARGET_RETURN;
+      // 如果第一条指令预测跳转，根据类型选择目标地址
       npc = rinfo_q[0].target_type == `_BPU_TARGET_RETURN ? ppc_ras_q : raw_ppc_btb[0];
-      predict_o[0].taken = '1;
-    end
-    else if(branch_need_jmp[1]) begin
-      // npc_target_type = rinfo_q[1].target_type;
-      // npc_predict_taken = 1'b1;
-      pc_is_call = rinfo_q[1].target_type == `_BPU_TARGET_CALL;
-      pc_is_return = rinfo_q[1].target_type == `_BPU_TARGET_RETURN;
+    end else if(branch_need_jmp[1]) begin
+      // 如果第一条指令跳转，自然无需再判断第二条指令的目标地址
+      // 如果第二条指令预测跳转，根据类型选择目标地址
       npc = rinfo_q[1].target_type == `_BPU_TARGET_RETURN ? ppc_ras_q : raw_ppc_btb[1];
-      predict_o[1].taken = '1;
     end
+    // 冲刷流水线优先级最高
     if(rst_jmp) begin
       npc = jpc;
     end
   end
-  assign inst_0_jmp = branch_need_jmp[0];
+  ```
+
+- 分支信息输出
+
+  ```systemverilog
   always_comb begin
-    // predict_o.taken = '0; // 在npc 逻辑块中描述
-    // predict_o.pc_off = pc[2];
+    if(branch_need_jmp[0]) begin
+      predict_o[0].taken = '1;
+    end
+    else if(branch_need_jmp[1]) begin
+      predict_o[1].taken = '1;
+    end
+  end
+  
+  always_comb begin
     predict_o[0].predict_pc = npc;
     predict_o[1].predict_pc = npc;
     predict_o[0].lphr = level2_cnt[0];
@@ -388,8 +458,6 @@ module core_npc (
     predict_o[0].ras_ptr = ras_ptr_q;
     predict_o[1].ras_ptr = ras_ptr_q;
   end
+  ```
 
-endmodule
-```
-
-## 2 指令译码
+##  指令译码
