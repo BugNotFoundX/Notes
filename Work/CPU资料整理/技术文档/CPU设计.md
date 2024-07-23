@@ -1,14 +1,14 @@
 # CPU设计
 
 
-- 本章基于 LainCore 代码介绍如何设计一个顺序双发射处理器
+- 本章通过讲解 LainCore 代码，介绍如何设计一个 LA32R 指令集的顺序双发射处理器
 - 本章内容按照处理器流水线从前到后顺序组织
 - 项目地址https://github.com/LainChip/LainCore
 - 本章仅关注如何实现，相关知识参阅[教程文档]()
 
 ## 1 分支预测
 
-- 代码位于LainCore/rtl/core_npc_complex.sv文件中
+- 代码主要位于`LainCore/rtl/core_npc_complex.sv`文件中
 - 本小节以LainCore分支预测器为例，介绍如何构建一个简单的二级分支预测器
 - 本节仅关注如何实现一个简单二级分支预测器，分支预测相关知识参阅[教程文档]()
 
@@ -460,3 +460,117 @@
   ```
 
 ## 2 指令译码
+
+- 手动构建译码器比较简单，一般采用AND-OR结构
+
+- 可参考https://gitee.com/loongson-edu/open-la500/blob/master/id_stage.v
+
+- 本节介绍如何使用 LainCore 提供的解码器脚本生成解码器，可大大提升开发效率
+
+- 代码位于`LainCore/src/simple-decoder`文件夹下
+
+- 脚本通过编写JSON文件定义解码器
+
+  - 脚本支持读入多个JSON文件
+
+  - 脚本一次性读入所有JSON后才进行分析，在A脚本中定义的内容可在B脚本中使用
+
+  - JSON文件规范如下：
+
+    ```json
+    {
+      // 支持3种指令信号值的定义方式
+      "signal_values": {
+        // 列表形式
+        // 最终会在decoder.svh中生成对应宏定义
+        "signal_name0": [
+          "S0_VALUE0",  // 0
+          "S0_VALUE1",  // 1
+          "s0_VALUE3"   // 2
+        ],
+        
+    		// MAP形式
+        // 最终会在decoder.svh中生成对应宏定义
+        // 宏定义值与此处赋值相同
+        "signal_name1": {
+          "S1_VALUE0" : 0,
+          "S1_VALUE1" : 0,
+          "S1_VALUE2" : 1,
+          "S1_VALUE3" : 2,
+          "S1_VALUE4" : 3,
+          "S1_VALUE5" : 4
+        },
+    
+        // 真值形式
+        // 不会生成宏定义
+        "signal_name2": [false, true]
+      },
+      "signals": {
+        // 信号定义包括三个键值对
+        // length：信号位宽
+        // stage：信号最后一个有效的流水级，此后信号被抛弃，用于生成信号在流水线中传递的接线函数
+        // default：信号默认值，需保证与信号位宽一致
+        "signal_name0": {
+          "length": 2,
+          "stage": "ex",
+          "default": "S0_VALUE0"
+        },
+        "signal_name1": {
+          "length": 3,
+          "stage": "m1",
+          "default": "S1_VALUE0"
+        },
+        "signal_name2": {
+          "length": 1,
+          "stage": "m2",
+          "default": false
+        }
+    
+      },
+      "instructs": {
+        // 指令解码信息定义
+        // opcode：指令标识码，原则上支持掩码形式，即支持形如“01010101----0101”的形式
+        // signal_namex：指令关注的信号，例如addi指令需要将alu_op信号设置为"ADD"
+        // 指令仅需要设置自己会影响到的信号，其余信号会采用默认值
+        "instruct_name0": {
+          "opcode": "01010101",
+          "signal_name0": "S0_VALUE0",
+          "signal_name1": "S1_VALUE0",
+          "signal_name2": false
+        },
+        "instruct_name1": {
+          "opcode": "01010110",
+          "signal_name0": "S0_VALUE1",
+          "signal_name2": true
+        },
+        "instruct_name2": {
+          "opcode": "01010110"
+        }
+      }
+    }
+    ```
+
+- 脚本Config文件
+
+  ```scala
+  object Config {
+    val useJson = true  // 也可以直接编写SpinalHDL格式的解码文件，此时设置该值为false，但是此功能还不完整
+    // 定义CPU流水级，需要考虑顺序，需与JSON中出现的一致
+    val stages: List[String] = List("is", "ex", "m1", "m2", "wb")
+    // 如果有想要添加到decoder.svh的其他和解码无关常量
+    val constPatch: String =
+      """
+        ...
+        |""".stripMargin
+  
+    val debug = true  // 控制添加指令原本信息
+    val checkInvalidInst = true  // 检查无效指令
+    val exceptionStage = "m1"  // 例外处理在哪一级？
+    val bitWidth = 32  // 位宽
+    val targetDirectory = "rtl" /*"/home/<usr name>/chiplab/IP/myCPU"*/  // 脚本输出路径
+    val defaultInstSet: InstSet = LoongArch32  // 无需修改
+  }
+  ```
+
+  
+
