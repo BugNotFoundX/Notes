@@ -8,7 +8,19 @@
         "type": "tabs",
         "children": [
           {
-            "id": "b75057eb8bf28717",
+            "id": "5f32e9f426fdb8ac",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "8737da3b29c05e95",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -19,7 +31,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -155,10 +168,12 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "b75057eb8bf28717",
+  "active": "8737da3b29c05e95",
   "lastOpenFiles": [
-    "README.md",
+    "conflict-files-obsidian-git.md",
+    "新建文本文档.txt",
     "Work/CPU资料整理/技术文档/CPU设计.md",
+    "README.md",
     "Work/CPU资料整理/技术文档",
     "Work/CPU资料整理",
     "Work",
