@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
                 "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/CPU设计.md"
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md"
               }
             }
           }
@@ -148,6 +148,9 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "9230775781f5c0ad",
-  "lastOpenFiles": []
+  "active": "b87361f5ea8e1505",
+  "lastOpenFiles": [
+    "Work/CPU资料整理/技术文档/CPU设计.md",
+    "Work/CPU资料整理/技术文档/SoC设计.md"
+  ]
 }
