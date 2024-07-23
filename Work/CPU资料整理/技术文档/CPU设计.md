@@ -17,7 +17,7 @@
 
 - 整体上实现了二级分支预测器，架构如图：（TODO）
 - 由于是顺序双发射架构，预测器每周期给出相邻8对齐两条PC的预测结果
-- TODO：更新信息生成
+- BPU更新信息生成（TODO）
 
 ### 1.2 具体实现
 
@@ -659,7 +659,7 @@ sudo apt-get install sbt
 
 - 运行`run`命令（第一次运行需等待编译）
 
-  ```
+  ```bash
   sbt:simple-decoder> run
   
   Multiple main classes detected. Select one to run:
@@ -707,7 +707,7 @@ sudo apt-get install sbt
     ...
   [Info] 简化解码表
   	...
-  [Info] 简化有效指令表，共30条
+  [Info] 简化有效指令表，共xx条
     ...
   [Progress] at 0.295 : Checks and transforms
   [Progress] at 0.361 : Generate Verilog to rtl

@@ -1,26 +1,14 @@
 {
   "main": {
-    "id": "d89a66fabf749169",
+    "id": "12fdcf392180ed1c",
     "type": "split",
     "children": [
       {
-        "id": "88b427b1eaed3a3a",
+        "id": "63ae926120098062",
         "type": "tabs",
         "children": [
           {
-            "id": "5f32e9f426fdb8ac",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Work/CPU资料整理/技术文档/CPU设计.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "8737da3b29c05e95",
+            "id": "b87361f5ea8e1505",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -31,22 +19,21 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "5b854bb50b6f3443",
+    "id": "b690f59a8d15e68a",
     "type": "split",
     "children": [
       {
-        "id": "df63053844e3b5bf",
+        "id": "90abb7d41272c0e1",
         "type": "tabs",
         "children": [
           {
-            "id": "8c0dc2361a27e2da",
+            "id": "184183e00b5c5d6a",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -56,7 +43,7 @@
             }
           },
           {
-            "id": "a6b4972cc83a2f87",
+            "id": "8e1af37e20293054",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -71,7 +58,7 @@
             }
           },
           {
-            "id": "5fe94b7034cc4538",
+            "id": "2b8ca38cbabce1e6",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -85,31 +72,21 @@
     "width": 300
   },
   "right": {
-    "id": "2599b1cb442c5bad",
+    "id": "8e2e76741c540391",
     "type": "split",
     "children": [
       {
-        "id": "04b3914966f2485c",
+        "id": "c90ec258a4276c75",
         "type": "tabs",
         "children": [
           {
-            "id": "cffb05da13889f09",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "Work/CPU资料整理/技术文档/CPU设计.md"
-              }
-            }
-          },
-          {
-            "id": "c17f3bbec617625c",
+            "id": "ee7b18d88c8cb9bb",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
                 "file": "Work/CPU资料整理/技术文档/CPU设计.md",
-                "collapseAll": false,
+                "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
@@ -120,7 +97,7 @@
             }
           },
           {
-            "id": "d29858d17b4d6670",
+            "id": "3b4b25545db28c10",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -132,15 +109,7 @@
             }
           },
           {
-            "id": "3f2f88896c46265e",
-            "type": "leaf",
-            "state": {
-              "type": "advanced-tables-toolbar",
-              "state": {}
-            }
-          },
-          {
-            "id": "7ba0410f3b5229b4",
+            "id": "ada94c87044a5689",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -149,8 +118,19 @@
                 "useHierarchy": true
               }
             }
+          },
+          {
+            "id": "9230775781f5c0ad",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Work/CPU资料整理/技术文档/CPU设计.md"
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -158,36 +138,16 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
-      "command-palette:打开命令面板": false,
-      "obsidian-excalidraw-plugin:新建绘图文件": false,
-      "table-editor-obsidian:Advanced Tables Toolbar": false
+      "command-palette:打开命令面板": false
     }
   },
-  "active": "8737da3b29c05e95",
-  "lastOpenFiles": [
-    "conflict-files-obsidian-git.md",
-    "新建文本文档.txt",
-    "Work/CPU资料整理/技术文档/CPU设计.md",
-    "README.md",
-    "Work/CPU资料整理/技术文档",
-    "Work/CPU资料整理",
-    "Work",
-    "Knowledge/抽象代数.md",
-    "Knowledge",
-    "知识/处理器设计/OpenLA500.md",
-    "Excalidraw/Drawing 2024-07-17 11.00.04.excalidraw.md",
-    "Excalidraw",
-    "知识/处理器设计",
-    "知识/抽象代数.md",
-    "知识/未命名.md",
-    "Excalidraw/Drawing 2024-07-01 21.39.50.excalidraw.md",
-    "未命名.md",
-    "知识/未命名.canvas",
-    "知识"
-  ]
+  "active": "9230775781f5c0ad",
+  "lastOpenFiles": []
 }
