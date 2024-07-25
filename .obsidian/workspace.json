@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/芯片实现.md",
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/芯片实现.md",
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
                 "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/芯片实现.md",
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/芯片实现.md"
+                "file": "Work/CPU资料整理/技术文档/SoC设计.md"
               }
             }
           }
@@ -163,8 +163,12 @@
   },
   "active": "39c63ded12c03f16",
   "lastOpenFiles": [
+    "Work/CPU资料整理/技术文档/CPU设计.md",
+    "Work/CPU资料整理/教程文档/指令译码.md",
+    "Work/CPU资料整理/教程文档/存储器.md",
     "Work/CPU资料整理/技术文档/SoC设计.md",
     "Work/CPU资料整理/技术文档/芯片实现.md",
-    "Work/CPU资料整理/技术文档/CPU设计.md"
+    "Work/CPU资料整理/教程文档",
+    "Work/CPU资料整理/未命名.md"
   ]
 }
