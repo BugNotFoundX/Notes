@@ -18,8 +18,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "39c63ded12c03f16",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Work/CPU资料整理/技术文档/芯片实现.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -85,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
+                "file": "Work/CPU资料整理/技术文档/芯片实现.md",
                 "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/SoC设计.md",
+                "file": "Work/CPU资料整理/技术文档/芯片实现.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Work/CPU资料整理/技术文档/SoC设计.md"
+                "file": "Work/CPU资料整理/技术文档/芯片实现.md"
               }
             }
           }
@@ -148,9 +161,10 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "b87361f5ea8e1505",
+  "active": "39c63ded12c03f16",
   "lastOpenFiles": [
-    "Work/CPU资料整理/技术文档/CPU设计.md",
-    "Work/CPU资料整理/技术文档/SoC设计.md"
+    "Work/CPU资料整理/技术文档/SoC设计.md",
+    "Work/CPU资料整理/技术文档/芯片实现.md",
+    "Work/CPU资料整理/技术文档/CPU设计.md"
   ]
 }
