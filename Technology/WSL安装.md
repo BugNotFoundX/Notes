@@ -112,6 +112,7 @@
 
   ```bash
   host_ip=$(cat /etc/resolv.conf |grep "nameserver" |cut -f 2 -d " ")
+  # 上面的不行就用下面这个
   # host_ip=$(ip route | grep default | awk '{print $3}')
   export ALL_PROXY="http://$host_ip:7890"
   export HTTP_PROXY=$ALL_PROXY
