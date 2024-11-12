@@ -40,7 +40,7 @@
   - 首次启动新安装的 Linux 分发版时，将打开一个控制台窗口，系统会要求你等待一分钟或两分钟，以便文件解压缩并存储到电脑上。 未来的所有启动时间应不到一秒。
   - 然后，需要为新的 Linux 分发版创建用户帐户和密码
 
-## 二、迁移Linux的位置
+## 二、迁移Linux的位置（if you want）
 
 - 停止WSL子系统
 
@@ -114,10 +114,40 @@
   host_ip=$(cat /etc/resolv.conf |grep "nameserver" |cut -f 2 -d " ")
   # host_ip=$(ip route | grep default | awk '{print $3}')
   export ALL_PROXY="http://$host_ip:7890"
-  export HTTP_PROXY=$ALL_PROXY
-  export http_proxy=$ALL_PROXY
-  export HTTPS_PROXY=$ALL_PROXY
-  export https_proxy=$ALL_PROXY
+  # export HTTP_PROXY=$ALL_PROXY
+  # export http_proxy=$ALL_PROXY
+  # export HTTPS_PROXY=$ALL_PROXY
+  # export https_proxy=$ALL_PROXY
   ```
 
 - 在WIN代理软件中允许局域网连接
+
+## 四、WSLG
+
+### 1 中文显示
+
+-   生成locale配置文件
+
+    ```bash
+    sudo locale-gen
+    locale
+    ```
+
+-   Sharing Windows fonts with WSL
+
+    ```bash
+    sudo apt install fontconfig
+    sudo vim /etc/fonts/local.conf
+    ```
+
+-   paste
+
+    ```html
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+        <dir>/mnt/c/Windows/Fonts</dir>
+    </fontconfig>
+    ```
+
+-   重启终端
