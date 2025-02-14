@@ -1,0 +1,81 @@
+# --------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+# --------------------------------------------------------------
+# Build gpu python package with CUDA 12.6 & CUDNN 9.x for python 3.12 in Ubuntu 22.04/24.04.
+
+# ubuntu22.04 or ubuntu24.04
+ARG OS=ubuntu22.04
+# nvidia cuda img
+ARG IMG=nvcr.io
+ARG CUDA_VERSION=12.6.3
+
+
+FROM ${IMG}/nvidia/cuda:${CUDA_VERSION}-cudnn-devel-${OS}
+
+# set other env or arg
+
+ENV DEBIAN_FRONTEND=noninteractive
+ARG PYTHON=python3.12
+
+# 更换 APT 源为清华源
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
+    && sed -i 's|http://security.ubuntu.com/ubuntu/|http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
+    && apt-get update
+
+# 添加 deadsnakes PPA 并安装 Python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y \
+        ${PYTHON} \
+        ${PYTHON}-dev \
+        ${PYTHON}-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# 更新 python 链接
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/${PYTHON} 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/${PYTHON} 1
+
+# Install required packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    g++ \
+    gcc \
+    make \
+    git \
+    cmake \
+    wget \
+    curl \
+    net-tools \
+    vim \
+    ninja-build \
+    openssh-server \
+    # for python transformers pkg
+    rustc cargo \  
+    sudo
+
+# 安装 pip
+RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | ${PYTHON}
+
+# Using tuna pipy mirror
+RUN pip3 config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+
+# Create a virtual environment and install dependencies
+# RUN cd /code \
+#     && python3 -m venv /code/env \
+#     && . /code/env/bin/activate \
+#     && pip install --upgrade psutil setuptools wheel packaging \
+#     && pip install -r /code/tools/ci_build/github/linux/python/requirements.txt
+
+# Install PyTorch
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+
+# 安装 Jupyter
+RUN pip3 install jupyterlab
+
+# 安装requirements.txt
+
+# Set the default command to start an interactive bash shell
+CMD [ "/bin/bash" ]
