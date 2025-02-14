@@ -106,6 +106,8 @@
 
   ```bat
   New-NetFirewallRule -DisplayName "WSL" -Direction Inbound  -InterfaceAlias "vEthernet (WSL)"  -Action Allow
+  # 上面不行就用下面的
+   New-NetFirewallRule -DisplayName "WSL" -Direction Inbound  -InterfaceAlias "vEthernet (WSL (Hyper-V firewall))"  -Action Allow
   ```
 
 - 在`~/.bashrc`中添加WSL代理设置
