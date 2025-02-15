@@ -3,22 +3,40 @@
 # Licensed under the MIT License.
 # --------------------------------------------------------------
 # Build gpu python package with CUDA 12.6 & CUDNN 9.x for python 3.12 in Ubuntu 22.04/24.04.
+# Support v2ray
 
 # ubuntu22.04 or ubuntu24.04
 ARG OS=ubuntu22.04
 ARG CUDA_VERSION=12.6.3
+ARG IMG=crater-harbor.act.buaa.edu.cn
+
+# stage1: v2ray
+FROM ${IMG}/docker.io/v2fly/v2fly-core:latest AS v2ray_src
 
 
+# stage2: GPU env
 FROM nvcr.io/nvidia/cuda:${CUDA_VERSION}-cudnn-devel-${OS}
 
-# set other env or arg
+# copy v2ray 文件
+## v2ray /usr/bin/
+## geosite.dat geoip.dat /usr/local/share/v2ray/
+## config.json /etc/v2ray/config.json
+COPY --from=v2ray_src /usr/bin/v2ray /usr/bin/
+COPY --from=v2ray_src /usr/local/share/v2ray/geosite.dat /usr/local/share/v2ray/geoip.dat /usr/local/share/v2ray/
+COPY --from=v2ray_src /etc/v2ray/config.json /etc/v2ray/config.json
 
+# 设置代理
+RUN echo "export http_proxy=http://127.0.0.1:10809" >> /root/.bashrc \
+    && echo "export https_proxy=http://127.0.0.1:10809" >> /root/.bashrc \
+    && echo "export all_proxy=socks5://127.0.0.1:10809" >> /root/.bashrc
+
+# set other env or arg
 ENV DEBIAN_FRONTEND=noninteractive
 ARG PYTHON=python3.12
 
 # 更换 APT 源为清华源
-RUN sed -i 's|https://archive.ubuntu.com/ubuntu/|https://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
-    && sed -i 's|https://security.ubuntu.com/ubuntu/|https://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
+    && sed -i 's|http://security.ubuntu.com/ubuntu/|http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
     && apt-get update
 
 # 添加 deadsnakes PPA 并安装 Python
@@ -73,6 +91,10 @@ RUN pip3 install torch torchvision torchaudio --index-url https://download.pytor
 RUN pip3 install jupyterlab
 
 # 安装requirements.txt
+
+
+# 存储 Dockerfile
+COPY Dockerfile /dockerfile
 
 # Set the default command to start an interactive bash shell
 CMD [ "/bin/bash" ]
