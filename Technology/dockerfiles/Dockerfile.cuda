@@ -19,8 +19,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG PYTHON=python3.12
 
 # 更换 APT 源为清华源
-RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
-    && sed -i 's|http://security.ubuntu.com/ubuntu/|http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
+RUN sed -i 's|https://archive.ubuntu.com/ubuntu/|https://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
+    && sed -i 's|https://security.ubuntu.com/ubuntu/|https://mirrors.tuna.tsinghua.edu.cn/ubuntu/|g' /etc/apt/sources.list \
     && apt-get update
 
 # 添加 deadsnakes PPA 并安装 Python
@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ninja-build \
     openssh-server \
     # for python transformers pkg
-    rustc cargo \  
+    rustc cargo \
     sudo
 
 # 安装 pip
